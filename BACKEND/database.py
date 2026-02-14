@@ -1,10 +1,14 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Base
+import os
+from dotenv import load_dotenv
 
 
+load_dotenv()
 
-DATABASE_URL = "postgresql+psycopg2://ian:ian123@localhost:5432/sendit_db"
+
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+psycopg2://ian:ian123@localhost:5432/sendit_db")
 
 
 
