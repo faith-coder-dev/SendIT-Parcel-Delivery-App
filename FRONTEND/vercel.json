@@ -1,0 +1,6 @@
+{
+    "framework": "vite",
+    "installCommand": "echo \"Skipping separate install; handled in buildCommand\"",
+    "buildCommand": "npm ci && npm run build",
+    "outputDirectory": "dist"
+}

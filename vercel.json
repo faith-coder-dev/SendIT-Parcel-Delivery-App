@@ -1,0 +1,6 @@
+{
+    "framework": "vite",
+    "installCommand": "echo \"Skipping root install; handled in buildCommand\"",
+    "buildCommand": "cd FRONTEND && npm ci && npm run build",
+    "outputDirectory": "FRONTEND/dist"
+}
