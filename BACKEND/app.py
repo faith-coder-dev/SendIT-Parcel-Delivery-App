@@ -22,10 +22,17 @@ from resources.user_delivery import UserDeliveryResource
 
 
 app = Flask(__name__)
+
+cors_origins_env = os.getenv("CORS_ORIGINS")
+if cors_origins_env:
+    cors_origins = [origin.strip() for origin in cors_origins_env.split(",") if origin.strip()]
+else:
+    cors_origins = ["http://localhost:5173", "http://127.0.0.1:5173"]
+
 CORS(
     app,
     supports_credentials=True,
-    origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    origins=cors_origins,
     allow_headers=["Content-Type", "Authorization"],
     methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 )
