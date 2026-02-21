@@ -1,74 +1,44 @@
 import os
-from flask import Flask
-from flask_restful import Api
-from database import init_db
+from flask import Flask, jsonify
 from flask_cors import CORS
+from dotenv import load_dotenv
+from database import init_db, SessionLocal
+from config import SECRET_KEY, CORS_ORIGINS
 
-from resources.user import UserListResource, UserResource
-from resources.delivery import DeliveryListResource
-from resources.profile import Profile
-from resources.auth import Register, Login, Logout
-from resources.admin_delivery import AdminDeliveryResource
-from resources.rider import (
-    RiderListResource,
-    DriverDeliveryListResource,
-    DriverDeliveryResource,
-)
-from resources.track_delivery import TrackDeliveryResource
-from resources.user_delivery import UserDeliveryResource
+# Load environment variables
+load_dotenv()
 
-
-
-
-
+# Create Flask app
 app = Flask(__name__)
+app.config["SECRET_KEY"] = SECRET_KEY
 
-cors_origins_env = os.getenv("CORS_ORIGINS")
-if cors_origins_env:
-    cors_origins = [origin.strip() for origin in cors_origins_env.split(",") if origin.strip()]
-else:
-    cors_origins = ["http://localhost:5173", "http://127.0.0.1:5173"]
+# Enable CORS for your frontend
+CORS(app, origins=CORS_ORIGINS)
 
-CORS(
-    app,
-    supports_credentials=True,
-    origins=cors_origins,
-    allow_headers=["Content-Type", "Authorization"],
-    methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-)
-api = Api(app)
-
-
+# Initialize database
 init_db()
 
+# Root route
+@app.route("/")
+def index():
+    return "SendIT backend is running and connected to Supabase!"
 
+# Health check route
+@app.route("/health")
+def health_check():
+    try:
+        db = SessionLocal()
+        db.execute("SELECT 1")
+        db.close()
+        return jsonify({"status": "ok", "database": "connected"})
+    except Exception as e:
+        return jsonify({"status": "error", "database": str(e)})
 
-api.add_resource(Register, "/auth/register", strict_slashes=False)
-api.add_resource(Login, "/auth/login", strict_slashes=False)
-api.add_resource(Logout, "/auth/logout", strict_slashes=False)
-
-
-api.add_resource(UserListResource, "/users", strict_slashes=False)
-api.add_resource(UserResource, "/users/<int:user_id>", strict_slashes=False)
-
-
-api.add_resource(DeliveryListResource, "/deliveries", strict_slashes=False)
-api.add_resource(TrackDeliveryResource, "/deliveries/<int:delivery_id>/track", strict_slashes=False)
-api.add_resource(UserDeliveryResource, "/user/deliveries/<int:delivery_id>", strict_slashes=False)
-
-# for the current logged-in user
-api.add_resource(Profile, "/profile", strict_slashes=False)
-
-api.add_resource(
-    AdminDeliveryResource,
-    "/admin/deliveries/<int:delivery_id>"
-)
-
-api.add_resource(RiderListResource, "/riders", strict_slashes=False)
-api.add_resource(DriverDeliveryListResource, "/driver/deliveries", strict_slashes=False)
-api.add_resource(DriverDeliveryResource, "/driver/deliveries/<int:delivery_id>", strict_slashes=False)
-
-
+# Example protected route (JWT logic would go here)
+@app.route("/profile")
+def profile():
+    return jsonify({"message": "This would return user profile data"})
 
 if __name__ == "__main__":
-    app.run(debug=True, port=int(os.getenv("PORT", 5001)))
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
