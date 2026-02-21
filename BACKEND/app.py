@@ -1,7 +1,9 @@
 import os
+import logging
 from flask import Flask, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
+from sqlalchemy import text
 from database import init_db, SessionLocal
 from config import SECRET_KEY, CORS_ORIGINS
 
@@ -16,23 +18,34 @@ app.config["SECRET_KEY"] = SECRET_KEY
 CORS(app, origins=CORS_ORIGINS)
 
 # Initialize database
-init_db()
+try:
+    init_db()
+except Exception as e:
+    logging.exception("Database initialization failed at startup: %s", e)
 
 # Root route
 @app.route("/")
 def index():
-    return "SendIT backend is running and connected to Supabase!"
+    return "SendIT backend is running."
 
 # Health check route
 @app.route("/health")
 def health_check():
+    return jsonify({"status": "ok", "service": "running"})
+
+
+@app.route("/health/db")
+def health_db_check():
+    db = None
     try:
         db = SessionLocal()
-        db.execute("SELECT 1")
-        db.close()
+        db.execute(text("SELECT 1"))
         return jsonify({"status": "ok", "database": "connected"})
     except Exception as e:
-        return jsonify({"status": "error", "database": str(e)})
+        return jsonify({"status": "error", "database": str(e)}), 503
+    finally:
+        if db is not None:
+            db.close()
 
 # Example protected route (JWT logic would go here)
 @app.route("/profile")
