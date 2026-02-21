@@ -3,6 +3,6 @@ builder = "NIXPACKS"
 buildCommand = "cd BACKEND && python -m venv .venv && ./.venv/bin/pip install -r requirements.txt"
 
 [deploy]
-startCommand = "cd BACKEND && ./.venv/bin/gunicorn app:app --bind 0.0.0.0:$PORT"
+startCommand = "cd BACKEND && ./.venv/bin/gunicorn app:app -c gunicorn.conf.py"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10

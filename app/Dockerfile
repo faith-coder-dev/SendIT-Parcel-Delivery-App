@@ -16,5 +16,5 @@ COPY BACKEND/ .
 # Expose the port (Koyeb will inject PORT)
 EXPOSE 8000
 
-# Run with Gunicorn, pointing to app.py
-CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:${PORT:-8000}"]
+# Run with Gunicorn using config file that reads PORT at runtime
+CMD ["gunicorn", "app:app", "-c", "gunicorn.conf.py"]
