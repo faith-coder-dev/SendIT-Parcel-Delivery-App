@@ -1,6 +1,6 @@
 import React from 'react';
 
-const SettingsTab = ({ admin }) => {
+const SettingsTab = () => {
   return (
     <div className="settings-tab">
       <div className="settings-card">

@@ -66,7 +66,7 @@ const CreateOrder = () => {
   const [destinationSuggestions, setDestinationSuggestions] = useState([]);
 
   const [showConfirm, setShowConfirm] = useState(false);
-  const [pendingOrder, setPendingOrder] = useState(null);
+  const [_pendingOrder, setPendingOrder] = useState(null);
 
   /* AUTOCOMPLETE */
   const searchLocations = (query, setSuggestions) => {

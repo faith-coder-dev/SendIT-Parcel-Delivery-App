@@ -16,7 +16,6 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     if is_production:
         raise RuntimeError("DATABASE_URL is required in production")
-    # Fallback for local development
     DATABASE_URL = "sqlite:///sendit.db"
 
 # Validate connection string

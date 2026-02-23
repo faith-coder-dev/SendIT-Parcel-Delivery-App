@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { authAPI } from "./api";
 import "./signup.css";
 
 const Signup = () => {
@@ -27,20 +28,13 @@ const Signup = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:5001/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include", // Important: include cookies
-        body: JSON.stringify({
-          name,
-          email,
-          phone_number: phoneNumber,
-          password,
-          role_id: roleMap[role],
-        }),
-      });
+      const res = await authAPI.register(
+        name,
+        email,
+        password,
+        roleMap[role],
+        phoneNumber
+      );
 
       const data = await res.json();
 

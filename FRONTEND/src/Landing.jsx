@@ -1,13 +1,83 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import PublicNavbar from "./components/PublicNavbar";
+import PublicFooter from "./components/PublicFooter";
 import "./Landing.css";
 
+const heroImages = [
+  "https://media.istockphoto.com/id/1456999523/photo/portrait-of-black-man-worker-working-in-large-warehouse-retail-store-industry-factory-rack-of.jpg?s=612x612&w=0&k=20&c=pKO4drQuaHgvgGBfGVPhcxX8RBbJQDUSpV5d8qx9JmA=",
+  "https://www.opentext.com/assets/images/products-solutions/solution-industry-category/opentext-image-is-logistics-and-transportation-en.jpg",
+  "https://3.bp.blogspot.com/-B57Viipj0a4/U3nk8OXBh7I/AAAAAAAAGk4/NBHq_KcCYMY/s1600/_1-PVDU+(Large).jpg",
+  "https://tse3.mm.bing.net/th/id/OIP.CxTg8G5MMcyTCy39TB3ALQHaDt?w=1200&h=600&rs=1&pid=ImgDetMain&o=7&rm=3",
+];
+
+const HERO_SWITCH_INTERVAL_MS = 6200;
+const HERO_TRANSITION_MS = 2000;
+
+const testimonials = [
+  {
+    name: "Amina N.",
+    role: "Small Business Owner",
+    quote:
+      "SendIT made our same-day deliveries reliable. Customers now receive updates and trust our service more.",
+  },
+  {
+    name: "Brian K.",
+    role: "Frequent Sender",
+    quote:
+      "I can create orders in minutes and track every parcel from pickup to drop-off without calling support.",
+  },
+  {
+    name: "Mercy W.",
+    role: "Operations Manager",
+    quote:
+      "The admin tools and live tracking improved coordination across our drivers and reduced delays significantly.",
+  },
+];
+
 const Landing = () => {
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [previousImageIndex, setPreviousImageIndex] = useState(0);
+  const [isHeroTransitioning, setIsHeroTransitioning] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveImageIndex((current) => {
+        const nextIndex = (current + 1) % heroImages.length;
+        setPreviousImageIndex(current);
+        setIsHeroTransitioning(true);
+        return nextIndex;
+      });
+    }, HERO_SWITCH_INTERVAL_MS);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (!isHeroTransitioning) return;
+    const timeout = setTimeout(() => {
+      setIsHeroTransitioning(false);
+    }, HERO_TRANSITION_MS);
+
+    return () => clearTimeout(timeout);
+  }, [isHeroTransitioning]);
+
   return (
     <div className="landing-container">
+      <PublicNavbar />
 
       {/* HERO */}
       <section className="hero-section">
+        <div className="hero-background-stack" aria-hidden="true">
+          <div
+            className={`hero-background hero-background-base${isHeroTransitioning ? " fade-out" : ""}`}
+            style={{ backgroundImage: `url(${heroImages[previousImageIndex]})` }}
+          />
+          <div
+            className={`hero-background hero-background-top${isHeroTransitioning ? " fade-in" : " visible"}`}
+            style={{ backgroundImage: `url(${heroImages[activeImageIndex]})` }}
+          />
+        </div>
         <div className="hero-overlay" />
         <div className="hero-content">
           <h1>SendIT</h1>
@@ -18,26 +88,6 @@ const Landing = () => {
             <Link to="/login" className="btn-primary">Login</Link>
             <Link to="/signup" className="btn-primary">Get Started</Link>
           </div>
-        </div>
-      </section>
-
-      {/* ROLE SELECTION */}
-      <section className="role-section">
-        <h2>Who are you?</h2>
-        <p>Select your role to get the best experience.</p>
-        <div className="role-cards">
-          <Link to="/login" className="role-card">
-            <h3>User</h3>
-            <p>Send parcels, track deliveries, and manage your orders.</p>
-          </Link>
-          <Link to="/login" className="role-card">
-            <h3>Driver</h3>
-            <p>Deliver parcels, update locations, and manage assignments.</p>
-          </Link>
-          <Link to="/login" className="role-card">
-            <h3>Admin</h3>
-            <p>Manage orders, update statuses, and oversee operations.</p>
-          </Link>
         </div>
       </section>
 
@@ -103,6 +153,23 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* TESTIMONIALS */}
+      <section className="testimonials-section">
+        <h2>What customers say</h2>
+        <p className="testimonials-subtitle">
+          Trusted by individuals, businesses, and operations teams.
+        </p>
+        <div className="testimonials-grid">
+          {testimonials.map((testimonial) => (
+            <article key={testimonial.name} className="testimonial-card">
+              <p className="testimonial-quote">“{testimonial.quote}”</p>
+              <p className="testimonial-name">{testimonial.name}</p>
+              <p className="testimonial-role">{testimonial.role}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
       {/* PRICING PREVIEW */}
       <section className="pricing-section">
         <h2>Simple & Transparent Pricing</h2>
@@ -156,9 +223,7 @@ const Landing = () => {
       </section>
 
       {/* FOOTER */}
-      <footer className="footer">
-        <p>© {new Date().getFullYear()} SendIT Courier Services. All rights reserved.</p>
-      </footer>
+      <PublicFooter />
     </div>
   );
 };

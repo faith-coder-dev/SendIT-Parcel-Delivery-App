@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useNavigate, } from "react-router-dom";
+import { authAPI } from "./api";
 
 import "./Auth.css";
 import "./Login.css";
@@ -25,14 +26,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5001/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-        credentials: "include",
-      });
+      const res = await authAPI.login(email, password);
 
       const data = await res.json();
 

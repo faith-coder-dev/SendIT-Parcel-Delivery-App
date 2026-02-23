@@ -1,5 +1,6 @@
 // Centralized API configuration
-const API_BASE_URL = "http://localhost:5001";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5001";
 
 export const getAuthHeaders = () => {
   const headers = { "Content-Type": "application/json" };
@@ -22,11 +23,14 @@ export const authAPI = {
     });
   },
 
-  register: async (name, email, password, role_id) => {
+  register: async (name, email, password, role_id, phone_number = null) => {
+    const payload = { name, email, password, role_id };
+    if (phone_number) payload.phone_number = phone_number;
+
     return fetch(`${API_BASE_URL}/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password, role_id }),
+      body: JSON.stringify(payload),
       credentials: "include",
     });
   },

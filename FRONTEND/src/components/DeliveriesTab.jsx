@@ -62,20 +62,6 @@ const DeliveriesTab = () => {
         }
     };
 
-    const updateDeliveryStatus = async (deliveryId, newStatus) => {
-        try {
-            const res = await deliveryAPI.updateDelivery(deliveryId, { status: newStatus });
-
-            if (res.ok) {
-                fetchDeliveries();
-                alert(`Delivery #${deliveryId} status updated to ${newStatus}`);
-            }
-        } catch (err) {
-            console.error('Error updating delivery:', err);
-            alert('Failed to update delivery status');
-        }
-    };
-
     const handleAssignRider = async () => {
         if (!assigningDelivery || !selectedRiderId) {
             alert('Please select a rider first');

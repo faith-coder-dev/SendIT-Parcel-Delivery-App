@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, UserPlus } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { userAPI } from '../api';
 
 const UsersTab = () => {
@@ -7,7 +7,7 @@ const UsersTab = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [roleFilter, setRoleFilter] = useState('customer');
+  const [roleFilter] = useState('customer');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState(null);
   const pageSize = 8;

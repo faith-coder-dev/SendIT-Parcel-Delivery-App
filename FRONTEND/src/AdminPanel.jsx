@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { deliveryAPI, riderAPI } from "./api";
 import "./AdminPanel.css";
 
 const AdminPanel = () => {
@@ -16,10 +17,7 @@ const AdminPanel = () => {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch("http://localhost:5001/deliveries", {
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
+      const res = await deliveryAPI.getDeliveries();
 
       if (!res.ok) throw new Error("Failed to fetch orders");
       const data = await res.json();
@@ -38,10 +36,7 @@ const AdminPanel = () => {
 
   const fetchDrivers = async () => {
     try {
-      const res = await fetch("http://localhost:5001/riders", {
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
+      const res = await riderAPI.getRiders();
       if (!res.ok) throw new Error("Failed to fetch drivers");
       const data = await res.json();
       setDrivers(Array.isArray(data) ? data : data.riders || []);
@@ -54,20 +49,12 @@ const AdminPanel = () => {
     if (!user) navigate("/login");
     fetchOrders();
     fetchDrivers();
-  }, [user]);
+  }, [user, navigate]);
 
   const assignDriverToOrder = async (orderId, riderId) => {
     try {
       const body = { rider_id: Number(riderId), status: "accepted" };
-      const res = await fetch(
-        `http://localhost:5001/admin/deliveries/${orderId}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(body),
-        }
-      );
+      const res = await deliveryAPI.updateDelivery(orderId, body);
       if (!res.ok) throw new Error("Failed to assign driver");
       const updated = await res.json();
 
